@@ -73,11 +73,19 @@ describe("get_user_profile input validation", () => {
             expect(fetchUserProfile).toHaveBeenCalledWith(username);
             expect(result.isError).not.toBe(true);
 
-            const content = result.content.find((item) => item.type === "text");
+            const content = result.content.find(
+                (item): item is { type: "text"; text: string } =>
+                    typeof item === "object" &&
+                    item !== null &&
+                    "type" in item &&
+                    item.type === "text" &&
+                    "text" in item &&
+                    typeof item.text === "string"
+            );
 
             expect(content).toBeDefined();
 
-            if (content?.type === "text") {
+            if (content) {
                 const response = JSON.parse(content.text);
                 expect(response).not.toHaveProperty("username");
                 expect(response).toHaveProperty("profile");
